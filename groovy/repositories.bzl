@@ -16,7 +16,29 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:jvm.bzl", "jvm_maven_import_external")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
-def rules_groovy_dependencies():
+VERSION_MAP = {
+    "3.0.8": {
+        'urls': [
+            "https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-3.0.8.zip",
+        ],
+        'sha256': "87cf2a61b77f6378ae1081cfda9d14bc651271b25ffac57fc936cd17662e3240",
+    },
+    "3.0.7": {
+        'urls': [
+            "https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-3.0.7.zip",
+        ],
+        'sha256': "b9e2041cb83a963922f6761a0b037c5784670616632142b8d7002b7c3a96b7f5",
+    },
+    "2.5.8": {
+        'urls': [
+            "https://mirror.bazel.build/dl.bintray.com/groovy/maven/apache-groovy-binary-2.5.8.zip",
+            "https://dl.bintray.com/groovy/maven/apache-groovy-binary-2.5.8.zip",
+        ],
+        'sha256': "49fb14b98f9fed1744781e4383cf8bff76440032f58eb5fabdc9e67a5daa8742",
+    },
+}
+
+def rules_groovy_dependencies(version = None):
     maybe(
         http_archive,
         name = "rules_java",
@@ -27,25 +49,29 @@ def rules_groovy_dependencies():
         sha256 = "220b87d8cfabd22d1c6d8e3cdb4249abd4c93dcc152e0667db061fb1b957ee68",
     )
 
+    if not version:
+        fail("Need version")
+    if not (version in VERSION_MAP.keys()):
+        fail("Unknown version")
+
+    version_details = VERSION_MAP[version]
+
     http_archive(
         name = "groovy_sdk_artifact",
-        urls = [
-            "https://mirror.bazel.build/dl.bintray.com/groovy/maven/apache-groovy-binary-2.5.8.zip",
-            "https://dl.bintray.com/groovy/maven/apache-groovy-binary-2.5.8.zip",
-        ],
-        sha256 = "49fb14b98f9fed1744781e4383cf8bff76440032f58eb5fabdc9e67a5daa8742",
+        urls = version_details["urls"],
+        sha256 = version_details["sha256"],
         build_file_content = """
 filegroup(
     name = "sdk",
-    srcs = glob(["groovy-2.5.8/**"]),
+    srcs = glob(["groovy-%s/**"]),
     visibility = ["//visibility:public"],
 )
 java_import(
     name = "groovy",
-    jars = ["groovy-2.5.8/lib/groovy-2.5.8.jar"],
+    jars = ["groovy-%s/lib/groovy-%s.jar"],
     visibility = ["//visibility:public"],
 )
-""",
+""" % (version, version, version),
     )
     native.bind(
         name = "groovy-sdk",
