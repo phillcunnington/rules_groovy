@@ -17,6 +17,18 @@ load("@bazel_tools//tools/build_defs/repo:jvm.bzl", "jvm_maven_import_external")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
 VERSION_MAP = {
+    "4.0.11": {
+        'urls': [
+            "https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-4.0.11.zip",
+        ],
+        'sha256': "335fe28bc7d93ab9f73e0d21bfc3591c63f4532572e7e1f93dc22cb0401ab422",
+    },
+    "3.0.10": {
+        'urls': [
+            "https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-3.0.10.zip",
+        ],
+        'sha256': "a7632bcb91b4283c1b0c85f3e7e6dac1f9608cff6c8c07590b6a3c8b2056a1bc",
+    },
     "3.0.8": {
         'urls': [
             "https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-3.0.8.zip",
